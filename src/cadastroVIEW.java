@@ -144,20 +144,34 @@ public class cadastroVIEW extends javax.swing.JFrame {
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+         String nome = cadastroNome.getText().trim();
+        String valor = cadastroValor.getText().trim();
+
+        if (nome.isEmpty() || valor.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            int valorInt = Integer.parseInt(valor); // Valida se é número
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Valor deve ser um número!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         ProdutosDTO produto = new ProdutosDTO();
-        String nome = cadastroNome.getText();
-        String valor = cadastroValor.getText();
-        String status = "A Venda";
         produto.setNome(nome);
         produto.setValor(Integer.parseInt(valor));
-        produto.setStatus(status);
-        
-        ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
-        if (nome.isEmpty() || valor.isEmpty()) {
-    JOptionPane.showMessageDialog(null, "Preencha todos os campos!");
-    return;
-        }
+        produto.setStatus("A Venda");
+
+        ProdutosDAO dao = new ProdutosDAO();
+        dao.cadastrarProduto(produto);
+
+        // Limpa os campos após cadastro
+        cadastroNome.setText("");
+        cadastroValor.setText("");
+                                                
+
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed
