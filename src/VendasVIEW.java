@@ -16,6 +16,8 @@ public class VendasVIEW extends javax.swing.JFrame {
      */
     public VendasVIEW() {
         initComponents();
+        setTitle("Produtos Vendidos");
+        listarProdutosVendidos(); 
     }
 
     /**
