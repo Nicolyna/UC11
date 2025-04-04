@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -137,17 +138,37 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
+        String idText = id_produto_venda.getText().trim();
+    
+    if (idText.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Insira o ID do produto!", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        int id = Integer.parseInt(idText);
+        ProdutosDAO dao = new ProdutosDAO();
         
-        ProdutosDAO produtosdao = new ProdutosDAO();
+        if (dao.venderProduto(id)) {
+            JOptionPane.showMessageDialog(this, "Produto vendido com sucesso!");
+            listarProdutos(); 
+        } else {
+            JOptionPane.showMessageDialog(this, "Erro ao vender produto!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
         
-        //produtosdao.venderProduto(Integer.parseInt(id));
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "ID inválido! Insira um número.", "Erro", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+                      
+
         listarProdutos();
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        //vendasVIEW vendas = new vendasVIEW(); 
-        //vendas.setVisible(true);
+        VendasVIEW vendas = new VendasVIEW(); 
+        vendas.setVisible(true);
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -202,25 +223,24 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    private void listarProdutos(){
-        try {
-            ProdutosDAO produtosdao = new ProdutosDAO();
-            
-            DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
-            model.setNumRows(0);
-            
-            ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
-            
-            for(int i = 0; i < listagem.size(); i++){
-                model.addRow(new Object[]{
-                    listagem.get(i).getId(),
-                    listagem.get(i).getNome(),
-                    listagem.get(i).getValor(),
-                    listagem.get(i).getStatus()
-                });
-            }
-        } catch (Exception e) {
+   private void listarProdutos() {
+    try {
+        ProdutosDAO dao = new ProdutosDAO();
+        DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
+        model.setNumRows(0); // Limpa a tabela
+        
+        ArrayList<ProdutosDTO> produtos = dao.listarProdutos();
+        
+        for (ProdutosDTO produto : produtos) {
+            model.addRow(new Object[]{
+                produto.getId(),
+                produto.getNome(),
+                produto.getValor(),
+                produto.getStatus()
+            });
         }
-    
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
     }
+}
 }
